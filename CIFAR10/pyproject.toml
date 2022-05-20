@@ -1,0 +1,16 @@
+[build-system]
+requires = [
+    "poetry==1.1.13",
+]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry]
+name = "CIFAR10-50CLIENTS"
+version = "0.1"
+description = "Sample Code for Multiple-devices learning scenario with one orchestration server"
+authors = ["Maciej Zuziak <maciejkrzysztof.zuziak@isti.cnr.it>"]
+
+[tool.poetry.dependencies] # List of dependencies
+python = "^3.7"
+flwr = "^0.17.0"
+tensorflow-cpu = "^2.6.2"
