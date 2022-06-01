@@ -1,1 +1,17 @@
+[build-system]
+requires = [
+    "poetry==1.1.13",
+]
+build-backend = "poetry.masonry.api"
 
+[tool.poetry]
+name = "CONVNET_C"
+version = "0.1.0"
+description = "Decentralised (one node - many clients) version of Simple MNIST convnet by fchollet."
+authors = ["Scolpe, convnet model originally by fchollet"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+flwr = "^0.17.0"
+# flwr = { path = "../../", develop = true }  # Development
+tensorflow-cpu = "^2.6.2"
