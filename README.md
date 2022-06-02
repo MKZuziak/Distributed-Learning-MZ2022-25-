@@ -1,2 +1,7 @@
-# Distributed-Learning-MZ2022-25-
-Shared repository for all disturbed learning-related experiments and projects.
+# REPOSITORY FOR EXPERIMENTS WITH DISTRIBUTED LEARNING
+
+#### Author: Maciej Zuziak
+#### CONTACT: maciejkrzysztof.zuziak@isti.cnr.it
+
+## Table of experiments
+### MNIST CONVNET - FROM CENTRALIZED TO DECENTRALIZED

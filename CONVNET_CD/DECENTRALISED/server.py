@@ -8,17 +8,14 @@ import numpy as np
 
 def load_dataset_test():
     num_classes = 10
-    (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
+    _, (x_test, y_test) = keras.datasets.mnist.load_data()
 
     #Scale images to the [0, 1] range
-    x_train = x_train.astype("float32") / 255
     x_test = x_test.astype("float32") / 255
 
-    x_train = np.expand_dims(x_train, -1)
     x_test = np.expand_dims(x_test, -1)
 
     # convert class vectors to binary class matrices
-    y_train = keras.utils.to_categorical(y_train, num_classes)
     y_test = keras.utils.to_categorical(y_test, num_classes)
 
     print('Dataset loaded on the server side.')
@@ -44,11 +41,11 @@ def main() -> None:
 
     # Create strategy
     strategy = fl.server.strategy.FedAvg(
-        fraction_fit=0.1,
-        fraction_eval=0.1,
-        min_fit_clients=1,
-        min_eval_clients=1,
-        min_available_clients=1,
+        fraction_fit=0.3,
+        fraction_eval=0.3,
+        min_fit_clients=4,
+        min_eval_clients=4,
+        min_available_clients=8,
         eval_fn=get_eval_fn(model),
         on_fit_config_fn=fit_config,
         on_evaluate_config_fn=evaluate_config,
@@ -58,9 +55,11 @@ def main() -> None:
     # Start Flower server for four rounds of federated learning
     fl.server.start_server(
         server_address="[::]:8080",
-        config={"num_rounds": 5},
+        config={"num_rounds": 10},
         strategy=strategy,
     )
+
+    model.save("convnet_federated")
 
 
 def get_eval_fn(model):
@@ -88,8 +87,8 @@ def fit_config(rnd: int):
     local epoch, increase to two local epochs afterwards.
     """
     config = {
-        "batch_size": 2,
-        "local_epochs": 1 #1 if rnd < 2 else 2,
+        "batch_size": 24,
+        "local_epochs": 1 if rnd < 2 else 2,
     }
     return config
 

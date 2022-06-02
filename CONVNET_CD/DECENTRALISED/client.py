@@ -71,11 +71,11 @@ class CifarClient(fl.client.NumPyClient):
 def main() -> None:
     # Parse command line argument `partition`
     parser = argparse.ArgumentParser(description="Flower")
-    parser.add_argument("--partition", type=int, choices=range(0, 10), required=True)
+    parser.add_argument("--partition", type=int, choices=range(0, 40), required=True)
     args = parser.parse_args()
     # Change number of clients in the run.sh file.
-    if args.partition > 9:
-        raise Exception('The maximal number of clients that may be connected is 10!')
+    if args.partition > 40:
+        raise Exception('The maximal number of clients that may be connected is 40!')
 
     # Load and compile Keras model
     num_classes = 10
@@ -118,11 +118,14 @@ def load_partition(idx: int):
     assert y_train.shape == (60000,)
     assert y_test.shape == (10000,)
 
-    x_train = x_train[idx * 6000 : (idx + 1) * 6000]
-    y_train = y_train[idx * 6000 : (idx + 1) * 6000]
+    train_fraction = int(len(x_train) / 15) # number of agents
+    test_fraction = int(len(x_test) / 15) # number of agents
 
-    x_test = x_test[idx * 1000 : (idx + 1) * 6000]
-    y_test = y_test[idx * 1000 : (idx + 1) * 1000]
+    x_train = x_train[idx * train_fraction : (idx + 1) * train_fraction]
+    y_train = y_train[idx * train_fraction : (idx + 1) * train_fraction]
+
+    x_test = x_test[idx * test_fraction : (idx + 1) * test_fraction]
+    y_test = y_test[idx * test_fraction : (idx + 1) * test_fraction]
 
     #Scale images to the [0, 1] range
     x_train = x_train.astype("float32") / 255
