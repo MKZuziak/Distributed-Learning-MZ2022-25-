@@ -4,7 +4,7 @@ echo "Starting server"
 python3 server.py &
 sleep 3  # Sleep for 3s to give the server enough time to start
 
-for i in `seq 0 4`; do
+for i in `seq 0 9`; do
     echo "Starting client $i"
     python3 client.py --partition=${i} &
 done
