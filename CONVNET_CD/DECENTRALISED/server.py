@@ -1,6 +1,7 @@
 from typing import Any, Callable, Dict, List, Optional, Tuple
 from tensorflow import keras
 from tensorflow.keras import layers
+import os
 
 import flwr as fl
 import tensorflow as tf
@@ -21,12 +22,20 @@ def load_dataset_test():
     print('Dataset loaded on the server side.')
     return x_test, y_test
 
+def save_model(model) -> None:
+    """Saves model in the convnet_federated file"""   
+    model.save("convnet_federated")
+
+
 def main() -> None:
     # Load and compile model for
     # 1. server-side parameter initialization
     # 2. server-side parameter evaluation
     num_classes = 10
     input_shape = (28, 28, 1)
+    with open('central_node_progress.txt', 'w') as file:
+        file.write("LOSS, ACCURACY\n")
+    
     model = keras.Sequential([
         keras.Input(shape=input_shape), # Used to instantiate a Keras tensor.
         layers.Conv2D(32, kernel_size=(3, 3), activation="relu"), #2D convolution layer.
@@ -59,7 +68,7 @@ def main() -> None:
         strategy=strategy,
     )
 
-    model.save("convnet_federated")
+    save_model(model)
 
 
 def get_eval_fn(model):
@@ -75,6 +84,7 @@ def get_eval_fn(model):
     ) -> Optional[Tuple[float, Dict[str, fl.common.Scalar]]]:
         model.set_weights(weights)  # Update model with the latest parameters
         loss, accuracy = model.evaluate(x_val, y_val)
+        register_server_progress(loss, accuracy)
         return loss, {"accuracy": accuracy}
 
     return evaluate
@@ -102,6 +112,11 @@ def evaluate_config(rnd: int):
     """
     val_steps = 5 if rnd < 4 else 10
     return {"val_steps": val_steps}
+
+def register_server_progress(loss, accuracy) -> None:
+    """Saves loss and accuracy of the model for every training (central) iteration"""
+    with open('central_node_progress.txt', 'a') as file:
+        file.write("{loss}, {accuracy}\n".format(loss=loss, accuracy=accuracy))
 
 
 if __name__ == "__main__":
